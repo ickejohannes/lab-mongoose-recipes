@@ -7,6 +7,16 @@ const data = require('./data');
 
 const MONGODB_URI = 'mongodb://localhost:27017/recipe-app';
 
+const recipe = {
+  title: "YummyPie",
+  level: "Amateur Chef",
+  ingredients: ["Yummy potatoes", "yummy fish"],
+  cuisine: "Asian",
+  dishType: "breakfast",
+  duration: 5,
+  creator: "Eric&Johannes"
+}
+
 // Connection to the database "recipe-app"
 mongoose
   .connect(MONGODB_URI)
@@ -16,8 +26,24 @@ mongoose
     return Recipe.deleteMany()
   })
   .then(() => {
-    // Run your code here, after you have insured that the connection was made
+    Recipe.create(recipe)
+      .then(({title}) => console.log(title));
   })
+  .then(() => {
+    Recipe.insertMany(data)
+      .then(result => {
+        result.forEach(({ title }) => {
+          console.log(title)
+        })
+      })
+      .then(() => {
+        Recipe.findOneAndUpdate({ title: "Rigatoni alla Genovese" }, { duration: 100 })
+          .then(() => console.log("successfully updated Rigatoni!"));
+      })
+  })
+  
   .catch(error => {
     console.error('Error connecting to the database', error);
   });
+
+
